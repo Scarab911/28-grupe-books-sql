@@ -6,7 +6,7 @@ db.init = async ({ database, host, user }) => {
     const connection = await db.createDatabase({ database, host, user });
 
     await db.createTableAuthor(connection);
-    await db.createTableBooks(connection);
+    // await db.createTableBooks(connection);
 
     return connection;
 }
