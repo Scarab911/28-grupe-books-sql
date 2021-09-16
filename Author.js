@@ -11,15 +11,15 @@ const Author = {};
  */
 Author.create = async (connection, authorFirstname, authorLastname) => {
     //VALIDATION:
-    if (!Validation.isText(authorFirstname)) {
+    if (!Validation.isValidFirstName(authorFirstname)) {
 
-        return `Parametras turi buti ne tuscias tekstas!`;
+        return `Vardas negali buti tuscias arba is mazosios raides!`;
     }
-    if (!Validation.isText(authorLastname)) {
+    if (!Validation.isValidLastName(authorLastname)) {
 
-        return `Parametras turi buti ne tuscias tekstas!`;
+        return `Pavarde negali buti tuscia arba is mazosios raides!`;
     }
-
+    //LOGIC
     const sql = 'INSERT INTO`authors`\
                 (`id`, `firstname`, `lastname`)\
              VALUES\
@@ -36,6 +36,7 @@ Author.create = async (connection, authorFirstname, authorLastname) => {
  * @returns {Promise<Object[]>} Tekstas, apibudinantis, kokie autoriai uzregistruoti duomenu bazeje.
  */
 Author.listAll = async (connection) => {
+
     const sql = 'SELECT *\
             FROM `authors`';
 
@@ -93,7 +94,7 @@ Author.findByFirstname = async (connection, authorFirstname) => {
 
     if (!Validation.isValidFirstName(authorFirstname)) {
 
-        return `Parametras turi buti ne tuscias tekstas!`;
+        return `Vardas negali buti tuscias arba is mazosios raides!`;
     }
     //LOGIC
     const sql = 'SELECT * FROM `authors` WHERE `firstname` LIKE "' + authorFirstname + '"';
@@ -121,12 +122,10 @@ Author.findByFirstname = async (connection, authorFirstname) => {
  */
 Author.findByLastname = async (connection, authorLastname) => {
     //VALIDATION:
-    if (typeof authorId !== 'number') {
-        return `Autoriaus ID turi buti skaicius!`
-    }
-    if (typeof propertyName !== 'string' ||
-        typeof propertyValue !== 'string') {
-        return `Parametras turi buti tekstas!`
+
+    if (!Validation.isValidLastName(authorLastname)) {
+
+        return `Pavarde negali buti tuscia arba is mazosios raides!`;
     }
     const sql = 'SELECT * FROM `authors` WHERE `lastname` LIKE "' + authorLastname + '"';
 
@@ -217,10 +216,5 @@ Author.delete = async (connection, authorId) => {
         return `Autorius su ID - ${authorId} sekmingai pasalintas is duomenu bazes!`;
     }
 }
-
-
-
-
-
 
 module.exports = Author;

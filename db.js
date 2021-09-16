@@ -6,7 +6,7 @@ db.init = async ({ database, host, user }) => {
     const connection = await db.createDatabase({ database, host, user });
 
     await db.createTableAuthor(connection);
-    // await db.createTableBooks(connection);
+    await db.createTableBooks(connection);
 
     return connection;
 }
@@ -56,6 +56,12 @@ db.createTableBooks = async (connection) => {
     try {
         const sql = 'CREATE TABLE IF NOT EXISTS `books` (\
                         `id` int(10) NOT NULL AUTO_INCREMENT,\
+                        `book_name` char(20) COLLATE\
+                         utf8_swedish_ci NOT NULL,\
+                         `author_id` int(10) COLLATE\
+                         utf8_swedish_ci NOT NULL,\
+                        `release_year` smallint(4) COLLATE\
+                         utf8_swedish_ci NOT NULL,\
                         PRIMARY KEY(`id`)\
                     ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_swedish_ci';
         await connection.execute(sql);
