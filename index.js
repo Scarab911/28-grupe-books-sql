@@ -109,6 +109,47 @@ app.init = async () => {
         let knygaPagalMetus = await Books.findByYear(conn, 1999);
         console.log(knygaPagalMetus);
 
+        console.log('');
+        let updateBook = await Books.updateById(conn, 2, 'release_year', 2017);
+        console.log(updateBook);
+
+        console.log('');
+        let updateBookName = await Books.updateNameById(conn, 2, 'Kopos Seselyje');
+        console.log(updateBookName);
+
+        console.log('');
+        let updateBookYear = await Books.updateYearById(conn, 2, 2020);
+        console.log(updateBookYear);
+
+        console.log('');
+        createBook = await Books.create(conn, 1, 'Kopustu laukas', 1995);
+        console.log(createBook);
+
+        console.log('');
+        createBook = await Books.create(conn, 1, 'Saule', 2001);
+        console.log(createBook);
+
+        console.log('');
+        createBook = await Books.create(conn, 4, 'Barsuko Kelione Namo', 2001);
+        console.log(createBook);
+
+        console.log('');
+        listAllBooks = await Books.listAll(conn);
+        console.log(listAllBooks);
+
+        //trinam knygas
+        console.log('');
+        let deleteBookByID = await Books.delete(conn, 2);
+        console.log(deleteBookByID);
+
+        console.log('');
+        let deleteAllBooksByAuthorsID = await Books.deleteAllByAuthorId(conn, 1);
+        console.log(deleteAllBooksByAuthorsID);
+
+        console.log('');
+        listAllBooks = await Books.listAll(conn);
+        console.log(listAllBooks);
+
     }
     await autoriaiAllMethods();
     await booksAllMethods();

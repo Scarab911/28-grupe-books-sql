@@ -110,6 +110,12 @@ Books.findByName = async (connection, bookName) => {
     }
 }
 
+/**
+ * Knygos paieska pagal metus.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} bookReleaseYear Knygos sukurimo metai.
+ * @returns {Promise<Object[]>} Sarasas su knygu objektais.
+ */
 Books.findByYear = async (connection, bookReleaseYear) => {
     //VALIDATION:
 
@@ -145,19 +151,156 @@ Books.findByYear = async (connection, bookReleaseYear) => {
     }
 }
 
+/**
+ * Knygos duomenu atnaujinimas.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} bookId Knygos ID.
+ * @param {string} propertyName Atnaujinamas parametras is lenteles.
+ * @param {string or number} propertyValue Reiksme i kuriama keiciama.
+ * @returns {Promise<Object[]>} Grazina pranesima apie atlikta operacija.
+ */
 Books.updateById = async (connection, bookId, propertyName, propertyValue) => {
+    if (!Validation.IDisValid(bookId)) {
+
+        return `Autoriaus ID turi buti teigiamas sveikasis skaicius!`;
+    }
+    if (!Validation.isText(propertyName)) {
+
+        return `Parametras turi buti ne tuscias tekstas!`;
+    }
+    const sql2 = 'SELECT *\
+                FROM INFORMATION_SCHEMA.COLUMNS\
+                    WHERE TABLE_NAME = N\'books\'';
+
+    let [rows] = await connection.execute(sql2);
+    //susipaprastinam gauta rez iki array
+    const a = rows.map(obj => obj.COLUMN_NAME);
+
+    //tikrinam ar sarase yra norimas pakeisti parametras
+    if (!a.includes(propertyName)) {
+        return `Tokia savybe neegzistuoja, atnaujinti neimanoma!`
+    }
+    //LOGIC
+    const sql = 'UPDATE `books`\
+                     SET `' + propertyName + '` = "' + propertyValue + '"\
+                      WHERE `books`.`id` =' + bookId;
+    [rows] = await connection.execute(sql);
+
+    if (rows.affectedRows === 0) {
+        return `Pagal duota ID - ${bookId} knyga nerasta, atnaujinti nepavyko!`;
+    } else {
+        return `Knygos duomenys atnaujinti sekmingai!`;
+    }
 }
 
+/**
+ * Knygos pavadinimo atnaujinimas.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} bookId Knygos ID.
+ * @param {string} bookName Naujas knygos pavadinimas.
+ * @returns {Promise<Object[]>} Grazina pranesima apie atlikta operacija.
+ */
 Books.updateNameById = async (connection, bookId, bookName) => {
+    if (!Validation.IDisValid(bookId)) {
+
+        return `Knygos ID turi buti teigiamas sveikasis skaicius!`;
+    }
+    if (!Validation.isText(bookName)) {
+
+        return `Knygos pavadinimas turi buti ne tuscias tekstas!`;
+    }
+
+    //LOGIC
+    const sql = 'UPDATE `books`\
+                     SET `book_name` = "' + bookName + '"\
+                      WHERE `books`.`id` =' + bookId;
+    [rows] = await connection.execute(sql);
+
+    if (rows.affectedRows === 0) {
+        return `Pagal duota ID - ${bookId} knyga nerasta, atnaujinti nepavyko!`;
+    } else {
+        return `Knygos pavadinimas atnaujintas sekmingai!`;
+    }
 }
 
+/**
+ * Knygos isleidimo metu atnaujinimas.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} bookId Knygos ID.
+ * @param {number} bookReleaseYear Nauji knygos metai.
+ * @returns {Promise<Object[]>} Grazina pranesima apie atlikta operacija.
+ */
 Books.updateYearById = async (connection, bookId, bookReleaseYear) => {
-}
+    //VALIDATION:
+    if (!Validation.IDisValid(bookId)) {
 
+        return `Knygos ID turi buti teigiamas sveikasis skaicius!`;
+    }
+    if (!Validation.IDisValid(bookReleaseYear)) {
+
+        return `Knygos metai turi buti sveikasis keturzenklis skaicius!`;
+    }
+    //LOGIC
+    const sql = 'UPDATE `books`\
+                     SET `release_year` = "' + bookReleaseYear + '"\
+                      WHERE `books`.`id` =' + bookId;
+    [rows] = await connection.execute(sql);
+
+    if (rows.affectedRows === 0) {
+        return `Pagal duota ID - ${bookId} knyga nerasta, atnaujinti nepavyko!`;
+    } else {
+        return `Knygos metai atnaujinti sekmingai!`;
+    }
+}
+/**
+ * Pasaliname knyga is lenteles pagal duota ID.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} bookId Knygos ID.
+ * @returns {Promise<Object[]>} Grazina pranesima apie atlikta operacija.
+ */
 Books.delete = async (connection, bookId) => {
-}
+    //VALIDATION:
+    if (!Validation.IDisValid(bookId)) {
 
+        return `Knygos ID turi buti teigiamas sveikasis skaicius!`;
+    }
+
+    //LOGIC
+    const sql = 'DELETE FROM `books`\
+                      WHERE `books`.`id` =' + bookId;
+
+    [rows] = await connection.execute(sql);
+
+    if (rows.affectedRows === 0) {
+        return `Pagal duota ID - ${bookId} knyga nerasta, istrinti nepavyko!`;
+    } else {
+        return `Knyga su ID - ${bookId} sekmingai pasalinta is duomenu bazes!`;
+    }
+}
+/**
+ * Pasaliname knyga is lenteles pagal duota autoriaus ID.
+ * @param {Object} connection Objektas, su kuriuo kvieciame duombazes mainpuliavimo metodus.
+ * @param {number} authorId Autoriaus ID.
+ * @returns {Promise<Object[]>} Grazina pranesima apie atlikta operacija.
+ */
 Books.deleteAllByAuthorId = async (connection, authorId) => {
+    //VALIDATION:
+    if (!Validation.IDisValid(authorId)) {
+
+        return `Autoriaus ID turi buti teigiamas sveikasis skaicius!`;
+    }
+
+    //LOGIC
+    const sql = 'DELETE FROM `books`\
+                      WHERE `books`.`author_id` =' + authorId;
+
+    [rows] = await connection.execute(sql);
+
+    if (rows.affectedRows === 0) {
+        return `Pagal duota ID - ${authorId} knyga nerasta, istrinti nepavyko!`;
+    } else {
+        return `Knygos su autoriaus ID - ${authorId} sekmingai pasalintos is duomenu bazes!`;
+    }
 }
 
 module.exports = Books;
