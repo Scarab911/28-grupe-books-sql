@@ -19,7 +19,7 @@ class Validation {
         return Validation.isValidName(lastName)
     }
 
-    static IDisValid = (param) => {
+    static isValidNumber = (param) => {
 
         if (typeof param !== 'number' ||
             !isFinite(param) ||
@@ -28,6 +28,21 @@ class Validation {
             return false
         }
         return true
+    }
+    static isValidYear = (param) => {
+
+        if (typeof param !== 'number' ||
+            !isFinite(param) ||
+            param < 1 ||
+            param > 2021 ||
+            param % 1 !== 0 ||
+            param.toString(10).length !== 4) {
+            return false
+        }
+        return true
+    }
+    static IDisValid = (id) => {
+        return Validation.isValidNumber(id);
     }
 
     static isValidEmail(email) {
@@ -70,17 +85,6 @@ class Validation {
         }
 
         return count;
-    }
-
-    static IDisValid = (param) => {
-
-        if (typeof param !== 'number' ||
-            !isFinite(param) ||
-            param < 1 ||
-            param % 1 !== 0) {
-            return false
-        }
-        return true
     }
 
     static isText = (param) => {

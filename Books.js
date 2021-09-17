@@ -23,9 +23,9 @@ Books.create = async (connection, authorId, bookName, bookReleaseYear) => {
 
         return `Parametras turi buti sveikasis skaicius!`;
     }
-    if (!Validation.IDisValid(bookReleaseYear)) {
+    if (!Validation.isValidYear(bookReleaseYear)) {
 
-        return `Parametras turi buti sveikasis skaicius!`;
+        return `Parametras - ${bookReleaseYear} turi buti sveikasis keturzenklis skaicius!`;
     }
     //LOGIC
     const sql = 'INSERT INTO `books`\
@@ -119,7 +119,7 @@ Books.findByName = async (connection, bookName) => {
 Books.findByYear = async (connection, bookReleaseYear) => {
     //VALIDATION:
 
-    if (!Validation.IDisValid(bookReleaseYear)) {
+    if (!Validation.isValidYear(bookReleaseYear)) {
 
         return `Parametras turi buti sveikasis keturzenklis skaicius!`;
     }
@@ -168,6 +168,10 @@ Books.updateById = async (connection, bookId, propertyName, propertyValue) => {
 
         return `Parametras turi buti ne tuscias tekstas!`;
     }
+    // if (!Validation.isText(propertyValue) ||
+    //     !Validation.isValidYear(propertyValue)) {
+    //     return `Parametras turi buti knygos pavadinimas arba metai`
+    // }
     const sql2 = 'SELECT *\
                 FROM INFORMATION_SCHEMA.COLUMNS\
                     WHERE TABLE_NAME = N\'books\'';
@@ -236,7 +240,7 @@ Books.updateYearById = async (connection, bookId, bookReleaseYear) => {
 
         return `Knygos ID turi buti teigiamas sveikasis skaicius!`;
     }
-    if (!Validation.IDisValid(bookReleaseYear)) {
+    if (!Validation.isValidYear(bookReleaseYear)) {
 
         return `Knygos metai turi buti sveikasis keturzenklis skaicius!`;
     }
